@@ -1,0 +1,28 @@
+OBM LOTOFÁCIL ANALYTICS v1.0
+============================
+
+COMO ABRIR NO WINDOWS
+1. Descompacte o pacote.
+2. Abra a pasta OBM_Lotofacil_Analytics_v1.0.
+3. Dê dois cliques em INICIAR.bat.
+4. O sistema abrirá em http://127.0.0.1:8081.
+
+É necessário ter Node.js 18 ou superior instalado. Não é necessário executar npm install.
+
+PUBLICAÇÃO NO GITHUB PAGES
+- Envie o conteúdo descompactado para a raiz do repositório.
+- index.html deve permanecer na raiz.
+- As pastas assets e data devem ser enviadas integralmente.
+- server.js, INICIAR.bat e tests podem permanecer no repositório, mas não são executados pelo GitHub Pages.
+
+BASE HISTÓRICA
+- 3.768 concursos, do 1 ao 3768.
+- Último registro: 21/08/2026.
+- A base original está no arquivo Lotofacil_Historico.xlsx.
+- O sistema nunca usa concursos fictícios.
+
+FINALIDADE
+O sistema organiza filtros estruturais, diversifica carteiras, confere jogos e apresenta estatísticas. Ele não prevê sorteios e não garante premiação.
+
+TESTES
+No terminal, execute: npm test

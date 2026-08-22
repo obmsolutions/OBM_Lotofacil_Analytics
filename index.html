@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Análise histórica, filtros estruturais e geração diversificada de jogos da Lotofácil.">
+    <title>OBM Lotofácil Analytics v1.0</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+    <script defer src="assets/vendor/chart.umd.min.js"></script>
+    <script defer src="data/lotofacil-data.js"></script>
+    <script defer src="assets/js/config.js"></script>
+    <script defer src="assets/js/core.js"></script>
+    <script defer src="assets/js/data-store.js"></script>
+    <script defer src="assets/js/statistics.js"></script>
+    <script defer src="assets/js/app.js"></script>
+</head>
+<body>
+    <header class="hero">
+        <div class="hero-inner">
+            <div>
+                <p class="eyebrow">OBM Solutions</p>
+                <h1>OBM Lotofácil Analytics <span>v1.0</span></h1>
+                <p class="hero-copy">Análise histórica, filtros auditáveis e geração de carteiras diversificadas.</p>
+            </div>
+            <div class="hero-badge">15 de 25</div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="alertContainer" class="alert hidden" role="status" aria-live="polite"></div>
+
+        <nav class="tabs" aria-label="Módulos do sistema">
+            <button class="tab active" data-tab="dashboard">Visão Geral</button>
+            <button class="tab" data-tab="selection">Seleção</button>
+            <button class="tab" data-tab="generator">Gerador</button>
+            <button class="tab" data-tab="filters">Filtros</button>
+            <button class="tab" data-tab="checker">Conferir</button>
+            <button class="tab" data-tab="statistics">Estatísticas</button>
+            <button class="tab" data-tab="scanner">Scanner</button>
+            <button class="tab" data-tab="backtest">Retroteste</button>
+        </nav>
+
+        <section id="dashboard" class="tab-panel active">
+            <div class="section-heading">
+                <div><p class="kicker">Base validada</p><h2>Visão geral do histórico</h2></div>
+                <button id="syncButton" class="button secondary">Atualizar pela Caixa</button>
+            </div>
+            <div class="summary-grid">
+                <article class="summary-card"><span>Concursos</span><strong id="drawCount">—</strong><small id="drawRange">—</small></article>
+                <article class="summary-card"><span>Último concurso</span><strong id="latestContest">—</strong><small id="latestDate">—</small></article>
+                <article class="summary-card"><span>Combinações possíveis</span><strong>3.268.760</strong><small>C(25,15)</small></article>
+                <article class="summary-card"><span>Filtro recomendado</span><strong id="recommendedCoverage">—</strong><small>cobertura histórica conjunta</small></article>
+            </div>
+            <div class="two-columns">
+                <article class="panel-card">
+                    <h3>Conclusão estatística principal</h3>
+                    <p>Os padrões mais frequentes do histórico acompanham muito de perto a distribuição combinatória teórica. Eles são úteis para eliminar formatos raros e organizar a carteira, mas não aumentam a probabilidade individual de uma combinação ser sorteada.</p>
+                    <p class="callout"><strong>Uso recomendado:</strong> aplicar faixas amplas, equilibrar a frequência das dezenas e reduzir a repetição excessiva entre os próprios jogos.</p>
+                </article>
+                <article class="panel-card">
+                    <h3>Último resultado da base</h3>
+                    <div id="latestBalls" class="balls"></div>
+                    <p id="dataStatus" class="muted">Carregando base histórica...</p>
+                </article>
+            </div>
+            <article class="panel-card">
+                <h3>Padrões estruturais mais fortes</h3>
+                <div id="strongPatterns" class="table-wrap"></div>
+            </article>
+        </section>
+
+        <section id="selection" class="tab-panel">
+            <div class="section-heading">
+                <div><p class="kicker">Universo de geração</p><h2>Selecione de 15 a 25 dezenas</h2></div>
+                <div class="button-row">
+                    <button id="randomSelectionButton" class="button secondary">Seleção aleatória</button>
+                    <button id="selectAllButton" class="button">Selecionar 25</button>
+                    <button id="clearSelectionButton" class="button ghost">Limpar</button>
+                </div>
+            </div>
+            <div id="numberGrid" class="number-grid"></div>
+            <div class="selection-summary">
+                <strong><span id="selectedCount">0</span> dezenas selecionadas</strong>
+                <span id="selectedNumbers" class="muted"></span>
+            </div>
+        </section>
+
+        <section id="generator" class="tab-panel">
+            <div class="section-heading"><div><p class="kicker">Carteira diversificada</p><h2>Gerar combinações</h2></div></div>
+            <div class="control-grid">
+                <label>Quantidade de jogos
+                    <input id="gameCount" type="number" min="1" max="1000" value="100">
+                </label>
+                <label>Dezenas por jogo
+                    <input id="gameSize" type="number" min="15" max="20" value="15">
+                </label>
+                <label>Estratégia
+                    <select id="generationStrategy"><option value="balanced">Equilíbrio e diversidade</option></select>
+                </label>
+            </div>
+            <div class="button-row">
+                <button id="generateButton" class="button">Gerar combinações</button>
+                <button id="exportGamesButton" class="button secondary">Exportar TXT</button>
+                <button id="exportAuditButton" class="button secondary">Exportar auditoria</button>
+                <button id="clearGamesButton" class="button ghost">Limpar</button>
+            </div>
+            <div id="generationStatus" class="status-box">Aguardando a geração das combinações.</div>
+            <div id="generationAudit"></div>
+            <p class="result-count">Combinações geradas: <strong id="generatedCount">0</strong></p>
+            <div id="gameResults" class="game-results"></div>
+        </section>
+
+        <section id="filters" class="tab-panel">
+            <div class="section-heading">
+                <div><p class="kicker">Padrões macroestruturais</p><h2>Filtros da Lotofácil</h2></div>
+                <div class="button-row">
+                    <button id="restoreFiltersButton" class="button">Restaurar recomendados</button>
+                    <button id="disableFiltersButton" class="button ghost">Desativar todos</button>
+                </div>
+            </div>
+            <p class="notice">As faixas foram calibradas para jogos de 15 dezenas. Nos jogos de 16 a 20, contagens, soma e sequências são normalizadas ao equivalente combinatório de 15 dezenas; linhas e colunas usam a geometria real do jogo.</p>
+            <div class="filter-grid">
+                <article class="filter-card"><h3>1. Paridade</h3><p>6 a 10 ímpares — 95,86%</p><div id="paridadeOptions" class="filter-options" data-values="6,7,8,9,10"></div></article>
+                <article class="filter-card"><h3>2. Soma</h3><p>161 a 228 — 95,06%</p><div id="somaOptions" class="filter-options"><button class="filter-option selected" data-value="161-228">161 a 228</button></div></article>
+                <article class="filter-card"><h3>3. Repetidas</h3><p>7 a 11 do concurso anterior — 96,68%</p><div id="repetidasOptions" class="filter-options" data-values="7,8,9,10,11"></div></article>
+                <article class="filter-card"><h3>4. Baixas</h3><p>6 a 10 dezenas entre 01 e 13 — 96,63%</p><div id="baixasOptions" class="filter-options" data-values="6,7,8,9,10"></div></article>
+                <article class="filter-card"><h3>5. Primos</h3><p>4 a 7 primos — 91,30%</p><div id="primosOptions" class="filter-options" data-values="4,5,6,7"></div></article>
+                <article class="filter-card"><h3>6. Fibonacci</h3><p>3 a 6 dezenas — 92,44%</p><div id="fibonacciOptions" class="filter-options" data-values="3,4,5,6"></div></article>
+                <article class="filter-card"><h3>7. Moldura</h3><p>8 a 11 dezenas — 90,74%</p><div id="molduraOptions" class="filter-options" data-values="8,9,10,11"></div></article>
+                <article class="filter-card"><h3>8. Múltiplos de 3</h3><p>3 a 6 dezenas — 90,76%</p><div id="multiplos3Options" class="filter-options" data-values="3,4,5,6"></div></article>
+                <article class="filter-card"><h3>9. Múltiplos de 4</h3><p>2 a 5 dezenas — 95,28%</p><div id="multiplos4Options" class="filter-options" data-values="2,3,4,5"></div></article>
+                <article class="filter-card"><h3>10. Linhas vazias</h3><p>Nenhuma linha vazia — 97,77%</p><div id="linhasVaziasOptions" class="filter-options"><button class="filter-option selected" data-value="0">0</button><button class="filter-option" data-value="1">1</button></div></article>
+                <article class="filter-card"><h3>11. Colunas vazias</h3><p>Nenhuma coluna vazia — 97,88%</p><div id="colunasVaziasOptions" class="filter-options"><button class="filter-option selected" data-value="0">0</button><button class="filter-option" data-value="1">1</button></div></article>
+                <article class="filter-card"><h3>12. Adjacências consecutivas</h3><p>7 a 10 ligações — 90,63%</p><div id="adjacenciasOptions" class="filter-options" data-values="7,8,9,10"></div></article>
+                <article class="filter-card"><h3>13. Maior sequência</h3><p>De 3 a 7 dezenas — 94,37%</p><div id="maiorSequenciaOptions" class="filter-options"><button class="filter-option selected" data-value="3-7">3 a 7</button></div></article>
+            </div>
+            <div id="activeFilterSummary" class="status-box"></div>
+        </section>
+
+        <section id="checker" class="tab-panel">
+            <div class="section-heading"><div><p class="kicker">Apuração</p><h2>Conferir jogos</h2></div></div>
+            <div class="two-columns">
+                <article class="panel-card">
+                    <h3>1. Carregar carteira TXT</h3>
+                    <input id="gamesFile" type="file" accept=".txt">
+                    <p id="fileReport" class="muted">Nenhum arquivo carregado. Os jogos gerados nesta sessão também podem ser conferidos.</p>
+                </article>
+                <article class="panel-card">
+                    <h3>2. Informar as 15 dezenas sorteadas</h3>
+                    <textarea id="drawInput" rows="3" placeholder="Ex.: 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15"></textarea>
+                    <button id="checkGamesButton" class="button">Conferir agora</button>
+                </article>
+            </div>
+            <div id="checkSummary"></div>
+            <div id="checkDetails" class="game-results"></div>
+        </section>
+
+        <section id="statistics" class="tab-panel">
+            <div class="section-heading"><div><p class="kicker">Leitura descritiva</p><h2>Estatísticas das dezenas</h2></div><label>Janela <select id="statsWindow"><option value="100">100 concursos</option><option value="300">300 concursos</option><option value="1000">1.000 concursos</option><option value="all" selected>Histórico completo</option></select></label></div>
+            <article class="panel-card chart-card"><canvas id="frequencyChart"></canvas></article>
+            <div id="numberRanking" class="table-wrap"></div>
+        </section>
+
+        <section id="scanner" class="tab-panel">
+            <div class="section-heading"><div><p class="kicker">Auditoria individual</p><h2>Scanner de combinação</h2></div></div>
+            <article class="panel-card">
+                <label>Digite de 15 a 20 dezenas
+                    <textarea id="scannerInput" rows="3" placeholder="01 02 03 04 05 06 07 08 09 10 11 12 13 14 15"></textarea>
+                </label>
+                <button id="scanButton" class="button">Analisar combinação</button>
+            </article>
+            <div id="scannerResult"></div>
+        </section>
+
+        <section id="backtest" class="tab-panel">
+            <div class="section-heading"><div><p class="kicker">Teste sem informação futura</p><h2>Retroteste e limites do método</h2></div></div>
+            <div class="summary-grid">
+                <article class="summary-card"><span>Filtro conjunto no histórico</span><strong>49,81%</strong><small>todos os 13 filtros</small></article>
+                <article class="summary-card"><span>Filtro conjunto teórico</span><strong>50,58%</strong><small>3.268.760 combinações</small></article>
+                <article class="summary-card"><span>Quentes no concurso seguinte</span><strong id="hotBacktest">—</strong><small>média de acertos em 15 dezenas</small></article>
+                <article class="summary-card"><span>Referência aleatória</span><strong>9,000</strong><small>valor esperado</small></article>
+            </div>
+            <article class="panel-card">
+                <h3>Interpretação correta</h3>
+                <p id="backtestExplanation">Calculando o retroteste...</p>
+                <p class="notice">O gerador melhora organização, cobertura e diversidade da carteira. Ele não prevê o próximo sorteio e não garante premiação.</p>
+            </article>
+        </section>
+    </main>
+
+    <footer><p>OBM Lotofácil Analytics v1.0 • Análise responsável de loterias</p></footer>
+</body>
+</html>
