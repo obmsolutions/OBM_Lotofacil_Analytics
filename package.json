@@ -1,9 +1,0 @@
-{
-  "name": "obm-lotofacil-analytics",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "serve": "node server.js",
-    "test": "node --test tests/*.test.js"
-  }
-}
